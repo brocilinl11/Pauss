@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paus - Raksasa Laut</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+  body { background: linear-gradient(180deg, #001f3f, #003366, #0074D9); color: #fff; min-height: 100vh; }
+  header { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at 50% 40%, #0074D9, #001f3f); padding: 20px; }
+  header h1 { font-size: 4rem; letter-spacing: 3px; margin-bottom: 20px; text-shadow: 0 0 30px rgba(0,212,255,0.8); animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+  header p { font-size: 1.3rem; max-width: 700px; line-height: 1.8; color: #a8dadc; }
+  nav { position: fixed; top: 0; width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,31,63,0.8); backdrop-filter: blur(10px); z-index: 100; }
+  nav .logo { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+  nav ul { display: flex; list-style: none; gap: 30px; }
+  nav ul a { color: #fff; text-decoration: none; transition: color 0.3s; }
+  nav ul a:hover { color: #00d4ff; }
+  section { padding: 100px 40px; max-width: 1200px; margin: 0 auto; }
+  section h2 { font-size: 2.5rem; margin-bottom: 40px; text-align: center; color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.5); }
+  .deskripsi-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(0,212,255,0.3); border-radius: 20px; padding: 50px; line-height: 2; font-size: 1.1rem; color: #e0f7fa; text-align: justify; position: relative; }
+  .deskripsi-box p { margin-bottom: 20px; }
+  .deskripsi-box strong { color: #00d4ff; }
+  
+  /* TOMBOL AUTO BACA */
+  .baca-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #00d4ff, #0074D9);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 5px 20px rgba(0,212,255,0.5);
+    transition: all 0.3s;
+  }
+  .baca-btn:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(0,212,255,0.8); }
+  .baca-btn.speaking { background: linear-gradient(135deg, #ff4444, #cc0000); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+  .baca-btn .icon-baca { font-size: 1.3rem; }
+
+  /* Floating button untuk kontrol */
+  .floating-control {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ctrl-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #00d4ff, #0074D9);
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(0,212,255,0.6);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ctrl-btn:hover { transform: scale(1.1); }
+  .ctrl-btn.hidden { display: none; }
+
+  .highlight {
+    background: rgba(0,212,255,0.3);
+    border-radius: 5px;
+    padding: 2px 4px;
+    transition: background 0.3s;
+  }
+
+  .fakta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+  .fakta-card { background: linear-gradient(135deg, rgba(0,116,217,0.2), rgba(0,31,63,0.5)); border: 1px solid rgba(0,212,255,0.3); border-radius: 15px; padding: 30px; text-align: center; transition: transform 0.3s; }
+  .fakta-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,212,255,0.4); }
+  .fakta-card .icon { font-size: 3rem; margin-bottom: 15px; }
+  .fakta-card h3 { color: #00d4ff; margin-bottom: 10px; }
+  .fakta-card p { color: #a8dadc; line-height: 1.6; font-size: 0.95rem; }
+  .jenis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+  .jenis-card { background: rgba(0,31,63,0.6); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,212,255,0.2); transition: transform 0.4s; }
+  .jenis-card:hover { transform: scale(1.03); }
+  .jenis-card .header-card { background: linear-gradient(135deg, #0074D9, #001f3f); padding: 30px; text-align: center; font-size: 3rem; }
+  .jenis-card .body-card { padding: 25px; }
+  .jenis-card h3 { color: #00d4ff; margin-bottom: 12px; }
+  .jenis-card p { color: #a8dadc; line-height: 1.7; font-size: 0.95rem; }
+  footer { background: #001428; padding: 40px 20px; text-align: center; border-top: 1px solid rgba(0,212,255,0.2); color: #a8dadc; }
+  footer .heart { color: #00d4ff; }
+  @media (max-width: 768px) {
+    header h1 { font-size: 2.5rem; }
+    nav { padding: 15px 20px; }
+    nav ul { gap: 15px; }
+    nav ul a { font-size: 0.85rem; }
+    section { padding: 60px 20px; }
+    .deskripsi-box { padding: 80px 25px 25px 25px; }
+    .baca-btn { font-size: 0.85rem; padding: 10px 16px; }
+    .ctrl-btn { width: 50px; height: 50px; font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🐋 PAUS</div>
+  <ul>
+    <li><a href="#deskripsi">Deskripsi</a></li>
+    <li><a href="#fakta">Fakta</a></li>
+    <li><a href="#jenis">Jenis</a></li>
+  </ul>
+</nav>
+
+<header>
+  <h1>PAUS</h1>
+  <p>Raksasa lembut yang menguasai samudra, simbol keagungan alam bawah laut yang penuh misteri</p>
+</header>
+
+<section id="deskripsi">
+  <h2>Teks Deskripsi Paus</h2>
+  <div class="deskripsi-box">
+    <button class="baca-btn" id="bacaBtn">
+      <span class="icon-baca">🔊</span>
+      <span id="bacaText">Bacakan Teks</span>
+    </button>
+    <div id="teksBacaan">
+      <p><strong>Paus</strong> adalah mamalia laut terbesar yang hidup di planet Bumi. Hewan ini termasuk dalam ordo Cetacea dan menghabiskan seluruh hidupnya di lautan. Paus memiliki tubuh yang besar dan ramping, dengan kulit halus berwarna abu-abu hingga biru gelap.</p>
+      <p>Di bagian atas kepala paus terdapat <strong>lubang sembur (blowhole)</strong> yang berfungsi sebagai alat pernapasan. Ketika paus muncul ke permukaan, ia menghembuskan udara hangat sehingga terbentuk semburan air yang tinggi dan indah.</p>
+      <p>Paus memiliki <strong>ekor besar berbentuk sirip</strong> yang disebut fluke, digunakan untuk mendorong tubuhnya di dalam air. Tubuh paus dilapisi lemak tebal bernama <strong>blubber</strong> yang menjaga suhu tubuh tetap hangat.</p>
+      <p>Meskipun bertubuh raksasa, paus dikenal sebagai hewan yang <strong>lembut dan cerdas</strong>. Paus berkomunikasi dengan suara merdu yang dapat terdengar hingga ratusan kilometer di dalam laut.</p>
+    </div>
+  </div>
+</section>
+
+<section id="fakta">
+  <h2>Fakta Menakjubkan</h2>
+  <div class="fakta-grid">
+    <div class="fakta-card"><div class="icon">🌊</div><h3>Mamalia Terbesar</h3><p>Paus biru panjangnya bisa mencapai 30 meter.</p></div>
+    <div class="fakta-card"><div class="icon">🎵</div><h3>Suara Merdu</h3><p>Paus bungkuk bisa "bernyanyi" hingga 20 menit.</p></div>
+    <div class="fakta-card"><div class="icon">💧</div><h3>Semburan Air</h3><p>Semburan paus biru mencapai 9 meter ke udara.</p></div>
+    <div class="fakta-card"><div class="icon">🧠</div><h3>Sangat Cerdas</h3><p>Otak paus kompleks, salah satu hewan tercerdas.</p></div>
+    <div class="fakta-card"><div class="icon">🍤</div><h3>Pemakan Krill</h3><p>Paus biru makan 4 ton krill setiap hari.</p></div>
+    <div class="fakta-card"><div class="icon">❤️</div><h3>Jantung Raksasa</h3><p>Jantung paus biru sebesar mobil kecil.</p></div>
+  </div>
+</section>
+
+<section id="jenis">
+  <h2>Jenis-Jenis Paus</h2>
+  <div class="jenis-grid">
+    <div class="jenis-card"><div class="header-card">🐋</div><div class="body-card"><h3>Paus Biru</h3><p>Hewan terbesar di dunia, panjang hingga 30 meter, memakan krill.</p></div></div>
+    <div class="jenis-card"><div class="header-card">🐳</div><div class="body-card"><h3>Paus Bungkuk</h3><p>Dikenal karena suara merdu dan lompatan spektakuler. Panjang 15 meter.</p></div></div>
+    <div class="jenis-card"><div class="header-card">🦈</div><div class="body-card"><h3>Paus Sperma</h3><p>Kepala besar persegi, mampu menyelam dalam untuk cari cumi raksasa.</p></div></div>
+  </div>
+</section>
+
+<footer>
+  <p>🌊 Website Edukasi tentang Paus 🐋</p>
+  <p>Dibuat dengan <span class="heart">♥</span> untuk mencintai kehidupan laut</p>
+</footer>
+
+<!-- Kontrol suara mengambang -->
+<div class="floating-control">
+  <button class="ctrl-btn hidden" id="pauseBtn" title="Jeda">⏸️</button>
+  <button class="ctrl-btn hidden" id="stopBtn" title="Stop">⏹️</button>
+</div>
+
+<script>
+  const bacaBtn = document.getElementById('bacaBtn');
+  const bacaText = document.getElementById('bacaText');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const teksBacaan = document.getElementById('teksBacaan');
+  
+  let utterance = null;
+  let isPaused = false;
+  let isSpeaking = false;
+
+  // Cek dukungan browser
+  if (!('speechSynthesis' in window)) {
+    bacaBtn.style.display = 'none';
+    alert('Maaf, browser kamu tidak mendukung fitur baca otomatis. Coba pakai Chrome ya!');
+  }
+
+  bacaBtn.addEventListener('click', () => {
+    if (isSpeaking) {
+      // Stop
+      window.speechSynthesis.cancel();
+      resetButton();
+      return;
+    }
+    
+    // Ambil teks dari deskripsi
+    const teks = teksBacaan.innerText;
+    
+    // Buat utterance baru
+    utterance = new SpeechSynthesisUtterance(teks);
+    utterance.lang = 'id-ID';   // Bahasa Indonesia
+    utterance.rate = 0.9;        // Kecepatan bicara (0.1 - 10)
+    utterance.pitch = 1;         // Nada suara (0 - 2)
+    utterance.volume = 1;        // Volume (0 - 1)
+
+    // Cari suara Indonesia
+    const voices = window.speechSynthesis.getVoices();
+    const suaraIndo = voices.find(v => v.lang === 'id-ID' || v.lang === 'id_ID');
+    if (suaraIndo) utterance.voice = suaraIndo;
+
+    // Event saat mulai
+    utterance.onstart = () => {
+      isSpeaking = true;
+      bacaBtn.classList.add('speaking');
+      bacaText.textContent = '⏹️ Stop';
+      pauseBtn.classList.remove('hidden');
+      stopBtn.classList.remove('hidden');
+    };
+
+    // Event saat selesai
+    utterance.onend = () => {
+      resetButton();
+    };
+
+    // Event error
+    utterance.onerror = () => {
+      resetButton();
+    };
+
+    window.speechSynthesis.speak(utterance);
+  });
+
+  // Tombol Pause / Resume
+  pauseBtn.addEventListener('click', () => {
+    if (isPaused) {
+      window.speechSynthesis.resume();
+      pauseBtn.textContent = '⏸️';
+      isPaused = false;
+    } else {
+      window.speechSynthesis.pause();
+      pauseBtn.textContent = '▶️';
+      isPaused = true;
+    }
+  });
+
+  // Tombol Stop
+  stopBtn.addEventListener('click', () => {
+    window.speechSynthesis.cancel();
+    resetButton();
+  });
+
+  function resetButton() {
+    isSpeaking = false;
+    isPaused = false;
+    bacaBtn.classList.remove('speaking');
+    bacaText.textContent = 'Bacakan Teks';
+    pauseBtn.classList.add('hidden');
+    stopBtn.classList.add('hidden');
+    pauseBtn.textContent = '⏸️';
+  }
+
+  // Preload voices (kadang butuh waktu load)
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
+
+  // Auto baca saat halaman pertama kali dibuka (opsional, aktifkan kalau mau)
+  // window.addEventListener('load', () => {
+  //   setTimeout(() => bacaBtn.click(), 1500);
+  // });
+</script>
+
+</body>
+</html>
